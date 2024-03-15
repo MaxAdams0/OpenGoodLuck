@@ -137,7 +137,8 @@ int main(void)
 	Texture plankSpec("planksSpec.png", GL_TEXTURE_2D, 1, GL_RED, GL_UNSIGNED_BYTE);
 	plankSpec.texUnit(shaderProgram, "tex1", 1);
 
-	
+	Model floor(vertices, indices);
+	Model spotlight(lightVertices, lightIndices);
 
 	/* Enable the depth buffer */
 	glEnable(GL_DEPTH_TEST);
