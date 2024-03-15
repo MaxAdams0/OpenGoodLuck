@@ -1,4 +1,4 @@
-#include "VAO.h"
+#include "VAO.hpp"
 
 /*
 	What is a VAO (Vertex Array Object)?

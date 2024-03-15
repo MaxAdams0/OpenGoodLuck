@@ -1,4 +1,4 @@
-#include "VBO.h"
+#include "VBO.hpp"
 
 /*
 	What is a VBO (Vertex Buffer Object)?

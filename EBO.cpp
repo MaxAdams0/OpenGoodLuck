@@ -1,4 +1,4 @@
-#include "EBO.h"
+#include "EBO.hpp"
 
 /*	Generated EBO and binds it to the indices
 	GLsizeiptr is what OpenGL uses for storing byte sizes*/

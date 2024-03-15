@@ -5,13 +5,13 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <stb_image.h>
-
-#include "Camera.h"
-#include "Texture.h"
-#include "Shader.h"
-#include "VAO.h"
-#include "VBO.h"
-#include "EBO.h"
+#include "Camera.hpp"
+#include "Texture.hpp"
+#include "Shader.hpp"
+#include "VAO.hpp"
+#include "VBO.hpp"
+#include "EBO.hpp"
+#include "Model.hpp"
 
 /*
 	A lot of the basic core fucntions in the engine are derived from
@@ -137,11 +137,12 @@ int main(void)
 	Texture plankSpec("planksSpec.png", GL_TEXTURE_2D, 1, GL_RED, GL_UNSIGNED_BYTE);
 	plankSpec.texUnit(shaderProgram, "tex1", 1);
 
+	
+
 	/* Enable the depth buffer */
 	glEnable(GL_DEPTH_TEST);
 	/* Screen width & height, starting positions */
 	Camera camera(winResW, winResH, glm::vec3(0.0f, 0.5f, 3.0f));
-
 
 	while (!glfwWindowShouldClose(window))
 	{
