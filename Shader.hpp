@@ -12,10 +12,11 @@ std::string getFileContents(const char* filename);
 
 class Shader {
 public:
+	const char* name;
 	/* Reference ID */
 	GLuint ID;
 	/* Constructor which compiles, wraps, and deletes shaders */
-	Shader(const char* vertFile, const char* fragFile);
+	Shader(const char* name, const char* vertFile, const char* fragFile);
 
 	void Activate();
 	void Delete();

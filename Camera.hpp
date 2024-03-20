@@ -1,3 +1,6 @@
+#ifndef CAMERA_CLASS_HPP
+#define CAMERA_CLASS_HPP
+
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
 #include <glm/glm.hpp>
@@ -5,11 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/vector_angle.hpp>
-
 #include"Shader.hpp"
-
-#ifndef CAMERA_CLASS_HPP
-#define CAMERA_CLASS_HPP
 
 class Camera {
 public:
@@ -32,7 +31,7 @@ public:
 	Camera(int width, int height, glm::vec3 position);
 
 	/* Create and send the view and projection matrixes to the vertex shader */
-	void Matrix(Shader& shader, const char* uniform);
+	void Matrix(Shader* shader, const char* uniform);
 	/* Transform camera matrixes */
 	void UpdateMatrix(float FOVdeg,  float nearPlane, float farPlane);
 	/* Keyboard and mouse inputs */

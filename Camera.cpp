@@ -17,9 +17,9 @@ void Camera::UpdateMatrix(float FOVdeg, float nearPlane, float farPlane)
 	cameraMatrix = proj * view;
 }
 
-void Camera::Matrix(Shader& shader, const char* uniform) {
+void Camera::Matrix(Shader* shader, const char* uniform) {
 	/* glm::value_ptr points to the object itself, not the data in it */
-	glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
+	glUniformMatrix4fv(glGetUniformLocation(shader->ID, uniform), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
 }
 
 void Camera::Inputs(GLFWwindow* window)

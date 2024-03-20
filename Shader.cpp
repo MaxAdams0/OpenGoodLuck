@@ -17,8 +17,9 @@ std::string getFileContents(const char* filename)
 	throw(errno);
 }
 
-Shader::Shader(const char* vertFile, const char* fragFile)
+Shader::Shader(const char* name, const char* vertFile, const char* fragFile)
 {
+	this->name = name;
 	/* Read and store the shaderfile contents */
 	std::string vertCode = getFileContents(vertFile);
 	std::string fragCode = getFileContents(fragFile);
@@ -37,7 +38,7 @@ Shader::Shader(const char* vertFile, const char* fragFile)
 	glCompileShader(fragShader);
 	compileErrors(fragShader, "FRAGMENT");
 	/* Wrap Vertex and Fragment shaders into a shader program */
-	ID = glCreateProgram();
+	this->ID = glCreateProgram();
 	glAttachShader(ID, vertShader);
 	glAttachShader(ID, fragShader);
 	glLinkProgram(ID);

@@ -1,34 +1,23 @@
-#include <string>
-#include <vector>
-#include <glm/glm.hpp>
-#include "Model.hpp"
+#include "Texture.hpp"
+#include <glm/ext/vector_float3.hpp>
 
 #ifndef ENTITY_CLASS_HPP
 #define ENTITY_CLASS_HPP
 
-class Entity
-{
-public:
-	std::string name;
+struct Mesh {
+	GLfloat* vertices;
+	GLuint* indices;
+};
+
+class Entity {
+private:
 	glm::vec3 pos;
 	glm::vec3 rot;
-	Model* model;
+	Mesh mesh;
+	Texture tex;
 
-	/* For use in points with no visuals */
-	Entity(std::string name, glm::vec3 pos, glm::vec3 rot) {
-		this->name = name;
-		this->pos = pos;
-		this->rot = rot;
-	}
-	/* For usual objects */
-	Entity(std::string name, glm::vec3 pos, glm::vec3 rot, Model* model) {
-		this->name = name;
-		this->pos = pos;
-		this->rot = rot;
-		this->model = model;
-	}
-
-	void Translate();
-	void Rotate();
+public:
+	Entity(const char* pathname, GLfloat* vertices, GLuint* indices);
 };
+
 #endif

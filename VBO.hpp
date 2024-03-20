@@ -1,7 +1,7 @@
-#include <glad/glad.h>
-
 #ifndef VBO_CLASS_HPP
 #define VBO_CLASS_HPP
+
+#include <glad/glad.h>
 
 /*	Binding an object makes it the current "selected" object, where all tranformations will be localized 
 	Vertex Buffer Objectss are objects containing the manipulated vertice data(?) */

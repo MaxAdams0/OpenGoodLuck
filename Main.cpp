@@ -11,7 +11,7 @@
 #include "VAO.hpp"
 #include "VBO.hpp"
 #include "EBO.hpp"
-#include "Model.hpp"
+#include "ResourceManager.hpp"
 
 /*
 	A lot of the basic core fucntions in the engine are derived from
@@ -89,23 +89,27 @@ int main(void)
 	glViewport(0, 0, winResW, winResH);
 
 	/* All the good shader stuff. Actual help in their respective files =) */
-	Shader shaderProgram("default.vert", "default.frag");
+	ResourceManager RM;
+	RM.createShader("default", "default.vert", "default.frag");
+	RM.createShader("light", "light.vert", "light.frag");
+	RM.createTexture("planks.png", "default", GL_RGBA);
+	RM.createTexture("planksSpec.png", "default", GL_RED);
+
 	VAO VAO1;
 	VAO1.Bind();
 	VBO VBO1(vertices, sizeof(vertices));
 	EBO EBO1(indices, sizeof(indices));
 	/* Links VBO attributes (i.e. coord, color, texture coords, etc.) */
-	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 11 * sizeof(float), (void*)0);
+	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 11 * sizeof(float), (void*)(0));
 	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 11 * sizeof(float), (void*)(3 * sizeof(float)));
 	VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 11 * sizeof(float), (void*)(6 * sizeof(float)));
 	VAO1.LinkAttrib(VBO1, 3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float)));
 	/* Unbind to prevent accidental manipulation */
-	VAO1.Unbind();
 	VBO1.Unbind();
 	EBO1.Unbind();
+	VAO1.Unbind();
 
 	/* Shader for light object */
-	Shader lightShader("light.vert", "light.frag");
 	VAO lightVAO;
 	lightVAO.Bind();
 	VBO lightVBO(lightVertices, sizeof(lightVertices));
@@ -124,21 +128,13 @@ int main(void)
 	glm::mat4 objectModel = glm::mat4(1.0f);
 	objectModel = glm::translate(objectModel, objectPos);
 
-	lightShader.Activate();
-	glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
-	glUniform4f(glGetUniformLocation(lightShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
-	shaderProgram.Activate();
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(objectModel));
-	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
-	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
-
-	Texture plankDiff("planks.png", GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE);
-	plankDiff.texUnit(shaderProgram, "tex0", 0);
-	Texture plankSpec("planksSpec.png", GL_TEXTURE_2D, 1, GL_RED, GL_UNSIGNED_BYTE);
-	plankSpec.texUnit(shaderProgram, "tex1", 1);
-
-	Model floor(vertices, indices);
-	Model spotlight(lightVertices, lightIndices);
+	RM.getShaderByName("light")->Activate();
+	glUniformMatrix4fv(glGetUniformLocation(RM.getShaderByName("light")->ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
+	glUniform4f(glGetUniformLocation(RM.getShaderByName("light")->ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+	RM.getShaderByName("default")->Activate();
+	glUniformMatrix4fv(glGetUniformLocation(RM.getShaderByName("default")->ID, "model"), 1, GL_FALSE, glm::value_ptr(objectModel));
+	glUniform4f(glGetUniformLocation(RM.getShaderByName("default")->ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+	glUniform3f(glGetUniformLocation(RM.getShaderByName("default")->ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
 	/* Enable the depth buffer */
 	glEnable(GL_DEPTH_TEST);
@@ -147,6 +143,9 @@ int main(void)
 
 	while (!glfwWindowShouldClose(window))
 	{
+		RM.bindAllTextures();
+		RM.activateAllShaders();
+
 		/* Background color */
 		glClearColor(0.04f, 0.10f, 0.22f, 1.0f);
 		/* Clear the back buffer and assign new color */
@@ -156,19 +155,14 @@ int main(void)
 		/* Update camera perspective */
 		camera.UpdateMatrix(45.0f, 0.1f, 100.0f);
 		/* Identify shader */
-		shaderProgram.Activate();
-		glUniform3f(glGetUniformLocation(shaderProgram.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
-		camera.Matrix(shaderProgram, "camMatrix");
-		/* Required for rendering */
-		plankDiff.Bind();
-		plankSpec.Bind();
+		glUniform3f(glGetUniformLocation(RM.getShaderByName("default")->ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
+		camera.Matrix(RM.getShaderByName("default"), "camMatrix");
 		/* Bind VAO for use */
 		VAO1.Bind();
 		/* Geometrical primitive, indices count, datatype of indices, index of indices */
 		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
 
-		lightShader.Activate();
-		camera.Matrix(lightShader, "camMatrix");
+		camera.Matrix(RM.getShaderByName("light"), "camMatrix");
 		lightVAO.Bind();
 		glDrawElements(GL_TRIANGLES, sizeof(lightIndices) / sizeof(int), GL_UNSIGNED_INT, 0);
 
@@ -183,13 +177,11 @@ int main(void)
 	VAO1.Delete();
 	VBO1.Delete();
 	EBO1.Delete();
-	plankDiff.Delete();
-	plankSpec.Delete();
-	shaderProgram.Delete();
 	lightVAO.Delete();
 	lightVBO.Delete();
 	lightEBO.Delete();
-	lightShader.Delete();
+	RM.deleteAllShaders();
+	RM.deleteAllTextures();
 
 	glfwDestroyWindow(window);
 	glfwTerminate();

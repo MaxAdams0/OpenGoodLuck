@@ -71,10 +71,7 @@
     <ClCompile Include="VBO.cpp">
       <Filter>Source Files\Engine\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
+    <ClCompile Include="ResourceManager.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -97,13 +94,13 @@
     <ClInclude Include="VBO.hpp">
       <Filter>Header Files\Engine\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.hpp">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.hpp">
+    <ClInclude Include="Util.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Util.hpp">
+    <ClInclude Include="Entity.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

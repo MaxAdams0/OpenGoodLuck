@@ -1,10 +1,9 @@
-#include <stb_image.h>
 #include "Texture.hpp"
 
 Texture::Texture(const char* image, GLenum texType, GLuint slot, GLenum format, GLenum pixelType)
 {
 	/* Assigns the type of the texture to the texture object */
-	type = texType;
+	this->type = texType;
 
 	int imgW, imgH, imgCh;
 	stbi_set_flip_vertically_on_load(true);
@@ -12,11 +11,11 @@ Texture::Texture(const char* image, GLenum texType, GLuint slot, GLenum format, 
 	unsigned char* bytes = stbi_load(image, &imgW, &imgH, &imgCh, 0);
 
 	/* Generates OpenGL Texture Object */
-	glGenTextures(1, &ID);
+	glGenTextures(1, &this->ID);
 	/* Assigns the texture to a Texture Unit */
 	glActiveTexture(GL_TEXTURE0 + slot);
-	unit = slot;
-	glBindTexture(texType, ID);
+	this->unit = slot;
+	glBindTexture(texType, this->ID);
 	/* Configures scaling behavior (Pixel) */
 	glTexParameteri(texType, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
 	glTexParameteri(texType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -34,14 +33,14 @@ Texture::Texture(const char* image, GLenum texType, GLuint slot, GLenum format, 
 	glBindTexture(texType, 0);
 }
 
-void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit)
+void Texture::texUnit(Shader* shader, const char* uniform)
 {
 	/* Gets the location of the uniform */
-	GLuint texUni = glGetUniformLocation(shader.ID, uniform);
+	GLuint texUni = glGetUniformLocation(shader->ID, uniform);
 	/* Shader needs to be activated before changing the value of a uniform */
-	shader.Activate();
+	shader->Activate();
 	/* Sets the value of the uniform */
-	glUniform1i(texUni, unit);
+	glUniform1i(texUni, this->unit);
 }
 
 void Texture::Bind()
