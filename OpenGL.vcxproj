@@ -19,36 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <None Include="default.frag" />
-    <None Include="default.vert" />
-    <None Include="light.frag" />
-    <None Include="light.vert" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="EBO.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="Stb.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="VAO.cpp" />
-    <ClCompile Include="VBO.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Camera.hpp" />
-    <ClInclude Include="EBO.hpp" />
-    <ClInclude Include="Entity.hpp" />
-    <ClInclude Include="ResourceManager.hpp" />
-    <ClInclude Include="Shader.hpp" />
-    <ClInclude Include="Texture.hpp" />
-    <ClInclude Include="Util.hpp" />
-    <ClInclude Include="VAO.hpp" />
-    <ClInclude Include="VBO.hpp" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="planks.png" />
     <Image Include="planksSpec.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Shader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="default.frag" />
+    <None Include="default.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Shader.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
