@@ -3,7 +3,6 @@
 #include <sstream>
 #include <iostream>
 #include <cerrno>
-#include <map>
 
 #include <glad/glad.h>
 
@@ -14,10 +13,6 @@ class Shader {
 public:
 	/* The ID # given by glCreateProgram() */
 	int shaderProgramID;
-	std::map<int, std::string> shaderTypes = { 
-		{GL_VERTEX_SHADER, "VERTEX"},
-		{GL_FRAGMENT_SHADER, "FRAGMENT"}
-	};
 
 	/* Constructor which creates the vertex and fragment shaders, then a shader program */
 	Shader(const char* vertFile, const char* fragFile);
@@ -31,7 +26,7 @@ public:
 	/* Delete the ShaderProgram and its child shaders */
 	void Delete();
 	/* General util function for converting a file to an array of chars */
-	const char* FileToCString(const char* filename);
+	std::string FileToString(const char* filename);
 };
 
 #endif

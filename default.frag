@@ -1,4 +1,3 @@
-// 330 = OpenGL v3.3, core = functionality profile
 #version 330 core
 out vec4 FragColor;
 

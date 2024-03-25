@@ -9,28 +9,17 @@ Shader::Shader(const char* vertFile, const char* fragFile)
 
 unsigned int Shader::CreateShader(const char* filename, int shaderType) {
 	/* Read and store the shaderfile contents */
-	const char* code = FileToCString(filename);
+	std::string code = FileToString(filename);
+	const char* src = code.c_str();
 
-	/* Verify that the given type is valid 
-		TODO: This is a very convoluted way to do it. Think of something better later on.	
-	*/
+	// Verify that the given type is valid 
 	bool valid = (shaderType == GL_VERTEX_SHADER || shaderType == GL_FRAGMENT_SHADER) ? true : false;
 	if (!valid) {
 		std::cout << "ERROR::SHADER::INVALID_SHADER_TYPE" << std::endl;
 	}
 	unsigned int shader = glCreateShader(shaderType);
-	glShaderSource(shader, 1, &code, NULL);
+	glShaderSource(shader, 1, &src, NULL);
 	glCompileShader(shader);
-
-	/* Check if the file has any errors while compiling */
-	int  success;
-	char infoLog[512];
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::" << shaderTypes[shaderType] << "::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
 
 	return shader;
 }
@@ -48,7 +37,7 @@ void Shader::CreateShaderProgram(unsigned int vertShader, unsigned int fragShade
 	glGetProgramiv(shaderProgramID, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(shaderProgramID, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		std::cout << "ERROR::SHADER::PROGRAM::FAILED\n" << infoLog << std::endl;
 	}
 
 	/* Delete both shaders (since they are already linked) */
@@ -66,7 +55,7 @@ void Shader::Delete()
 	glDeleteProgram(shaderProgramID);
 }
 
-const char* Shader::FileToCString(const char* filename) {
+std::string Shader::FileToString(const char* filename) {
 	std::ifstream in(filename, std::ios::binary);
 	if (in)
 	{
@@ -77,7 +66,7 @@ const char* Shader::FileToCString(const char* filename) {
 		in.read(&contents[0], contents.size());
 		in.close();
 
-		return(contents.c_str());
+		return(contents);
 	}
 	throw(errno);
 }
