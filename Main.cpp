@@ -6,8 +6,8 @@
 // Then project files!
 #include "Shader.hpp"
 
-int window_width = 800;
-int window_height = 600;
+int window_width = 640;
+int window_height = 640;
 
 bool useWireframe = false;
 
@@ -15,10 +15,11 @@ bool useWireframe = false;
 
 // These are in Normalized Device Coordinates (NDC), which are -1 to 1
 float vertices[] = {
-     0.5f,  0.5f, 0.0f,  // top right
-     0.5f, -0.5f, 0.0f,  // bottom right
-    -0.5f, -0.5f, 0.0f,  // bottom left
-    -0.5f,  0.5f, 0.0f   // top left 
+//          pos                color           tex
+     0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f, // top right
+     0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f, // bottom right
+    -0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 0.0f, // bottom left
+    -0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 1.0f,  0.0f, 1.0f  // top left 
 };
 unsigned int indices[] = {  // note that we start from 0!
     0, 1, 3,   // first triangle
@@ -57,12 +58,16 @@ int main()
       2. Size of vert.attr. (for pos, 3 bc a vec3 has 3 values)
       3. What type is contained in a vertex (GLSL's vec3 is floats)
       4. Should it be normalized (basically ignore this)
-      5. Stride between vertex attributes (3 * sizeof(float) bc vec3 is 3 floats in 1)
+      5. Stride between vertices (the total storage required for one vertex attribute)
       6. Offset of this attribute from the first.
           EX: for color, offset = (void*)(3 * sizeof(float)) bc it is after the position attribute
   */
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // position attribute
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(0 * sizeof(float))); // position attribute
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))); // color attribute
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float))); // texture attribute
   glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(2);
   // Allows for indexed drawing of triangles
   unsigned int EBO; // Element Buffer Object
   glGenBuffers(1, &EBO);
@@ -70,7 +75,7 @@ int main()
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
   // Create the shaders!
-  Shader defaultShaders("default.vert", "default.frag");
+  Shader defaultShader("default.vert", "default.frag");
 
   // The main event loop of the application
   while (!glfwWindowShouldClose(window))
@@ -80,7 +85,17 @@ int main()
     // Rendering stuff
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    defaultShaders.Activate();
+
+    defaultShader.Activate();
+
+    float timeValue = glfwGetTime();
+    float r = (sin(timeValue + 4) + 1.0f) / 2.0f;
+    float g = (sin(timeValue + 2) + 1.0f) / 2.0f;
+    float b = (sin(timeValue + 0) + 1.0f) / 2.0f;
+    int vertexColorLocation = glGetUniformLocation(defaultShader.shaderProgramID, "ourColor");
+    glUseProgram(defaultShader.shaderProgramID);
+    glUniform3f(vertexColorLocation, r, g, b);
+
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
