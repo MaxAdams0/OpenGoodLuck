@@ -11,7 +11,7 @@
 // Element Buffer Object Buffer Object. Allows for GPU to know what vertices form a triangle (indexing).
 class EBO {
 public:
-	unsigned int ID;
+	unsigned int ID = 0;
 
 	EBO(const GLuint* indices, GLsizeiptr size, GLenum drawMethod);
 

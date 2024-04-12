@@ -1,7 +1,7 @@
 #include "VBO.hpp"
 
 VBO::VBO(const GLfloat* vertices, GLsizeiptr size, GLenum drawMethod) {
-	glGenBuffers(1, &ID);
+	glGenBuffers(1, &this->ID);
 	Bind();
 	/* For glBufferData, there are 3 ways to handle the data:
 		GL_STREAM_DRAW: vertex data never changes, and is rarely used (basically nothing)
@@ -13,7 +13,7 @@ VBO::VBO(const GLfloat* vertices, GLsizeiptr size, GLenum drawMethod) {
 }
 
 void VBO::Bind() {
-	glBindBuffer(GL_ARRAY_BUFFER, ID);
+	glBindBuffer(GL_ARRAY_BUFFER, this->ID);
 }
 
 void VBO::Unbind() {

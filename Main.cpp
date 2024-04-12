@@ -86,8 +86,10 @@ int main()
 {
 	GLFWwindow* window = Initialize();
 
-	VAO defaultVAO(GL_FLOAT, {3, 3, 2});
 	VBO cubeVBO(vertices, sizeof(vertices), GL_DYNAMIC_DRAW);
+	cubeVBO.Bind();
+	VAO defaultVAO(GL_FLOAT, {3, 3, 2});
+	cubeVBO.Unbind();
 	EBO cubeEBO(indices, sizeof(indices), GL_DYNAMIC_DRAW);
 	Shader defaultShader("default.vert.glsl", "default.frag.glsl");
 	defaultShader.Use();

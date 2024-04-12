@@ -2,8 +2,8 @@
 
 VAO::VAO(GLenum type, std::vector<unsigned int> typesPerAttribute) {
 	// Generating VAO object and binding it
-	glGenVertexArrays(1, &ID);
-	glBindVertexArray(ID);
+	glGenVertexArrays(1, &this->ID);
+	glBindVertexArray(this->ID);
 	
 	// Initializing & declaring data required but not in a VertexAttribute
 	GLsizei stride = 0; // The total size of data required for one vertex attribute

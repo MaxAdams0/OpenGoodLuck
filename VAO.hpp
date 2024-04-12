@@ -7,7 +7,7 @@
 // Vertex Array Object. Tells the GPU how our vertex data is formatted, per object, per multiple objects or globally.
 class VAO { 
 public:
-	unsigned int ID;
+	unsigned int ID = 0;
 
 	VAO(GLenum type, std::vector<unsigned int>);
 };
