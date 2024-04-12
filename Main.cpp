@@ -5,7 +5,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -15,6 +14,7 @@
 #include "VAO.hpp"
 #include "VBO.hpp"
 #include "EBO.hpp"
+#include "Texture.hpp"
 
 int window_width = 800;
 int window_height = 800;
@@ -93,29 +93,7 @@ int main()
 	EBO cubeEBO(indices, sizeof(indices), GL_DYNAMIC_DRAW);
 	Shader defaultShader("default.vert.glsl", "default.frag.glsl");
 	defaultShader.Use();
-
-	// Loading image
-	int width, height, nrChannels;
-	stbi_set_flip_vertically_on_load(true);
-	unsigned char* data = stbi_load("girl.png", &width, &height, &nrChannels, 0);
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture); // Binding tells OpenGL subsequent calls will update this type
-	// Setting texture rendering behavior. Nearest = pixel art, (Bi)linear = more realistic but blurry
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST); // min = downscale
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // mag = upscale
-	/* Parameter overview:
-		2. mipmap level, 0 = base
-		3. what image type OpenGL should store it as
-		6. legacy stuff, ignore
-		7. source image type
-		8. image data type, ignore
-	*/
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	stbi_image_free(data);
+	Texture girlTex("girl.png", true);
 
 	/* OpenGL uses a right-handed system. What is that? Do the physics hand thing but point your pointer up.
 			each finger is pointing in the positive direction. Thumb = x, Pointer = y, Middle = z */
@@ -124,7 +102,7 @@ int main()
 	glm::mat4 projectionMatrix = glm::mat4(1.0f);
 	glm::mat4 MVP = glm::mat4(1.0f);
 	viewMatrix = glm::translate(viewMatrix, glm::vec3(0.0f, 0.0f, -3.0f)); // move view back 3u
-	projectionMatrix = glm::perspective(glm::radians(camera_fov), (float)width / (float)height, 0.1f, 100.0f);
+	projectionMatrix = glm::perspective(glm::radians(camera_fov), (float)window_width / (float)window_height, 0.1f, 100.0f);
 
 	// The main event loop of the application
 	while (!glfwWindowShouldClose(window))
@@ -137,7 +115,7 @@ int main()
 		glClearColor(0.2f, 0.2f, 0.4f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glBindTexture(GL_TEXTURE_2D, girlTex.ID);
 
 		float r = (sin(glfwGetTime() + 4) + 1.0f) / 2.0f;
 		float g = (sin(glfwGetTime() + 2) + 1.0f) / 2.0f;
