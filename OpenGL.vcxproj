@@ -21,17 +21,26 @@
   <ItemGroup>
     <Image Include="planks.png" />
     <Image Include="planksSpec.png" />
+    <Image Include="girl.png" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="EBO.cpp" />
+    <ClCompile Include="Errornter.cpp" />
+    <ClCompile Include="Errornter.hpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="VAO.cpp" />
+    <ClCompile Include="VAO.hpp" />
+    <ClCompile Include="VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="default.frag" />
-    <None Include="default.vert" />
+    <None Include="default.frag.glsl" />
+    <None Include="default.vert.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EBO.hpp" />
     <ClInclude Include="Shader.hpp" />
+    <ClInclude Include="VBO.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

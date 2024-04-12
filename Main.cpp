@@ -1,29 +1,78 @@
 // Standard libraries
 #include <iostream>
+#include <numbers>
 // The external libraries
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 // Then project files!
 #include "Shader.hpp"
+#include "Errornter.hpp"
+#include "VAO.hpp"
+#include "VBO.hpp"
+#include "EBO.hpp"
 
-int window_width = 640;
-int window_height = 640;
+int window_width = 800;
+int window_height = 800;
+float camera_fov = 90.0f;
 
 bool useWireframe = false;
 
 // ctrl-f '// ERROR' to find places where error handling is needed
 
+// When I get textures obj loader working, this will be replaced by 'dev\modelsnstuff\bluemorpho\BlueMorpho.obj'
 // These are in Normalized Device Coordinates (NDC), which are -1 to 1
-float vertices[] = {
-//          pos                color           tex
-     0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f, // top right
-     0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f, // bottom right
-    -0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 0.0f, // bottom left
-    -0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 1.0f,  0.0f, 1.0f  // top left 
+GLfloat vertices[] = {
+//			pos					  color				tex
+	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+	 0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+	-0.5f,  0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+
+	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+
+	-0.5f,  0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+
+	 0.5f,  0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+
+	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+
+	-0.5f,  0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 1.0f
 };
-unsigned int indices[] = {  // note that we start from 0!
-    0, 1, 3,   // first triangle
-    1, 2, 3    // second triangle
+GLuint indices[] = {  // note that we start from 0!
+	0, 1, 3,   // first triangle
+	1, 2, 3    // second triangle
 };
 
 // For resizing the window
@@ -35,120 +84,126 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 int main()
 {
-  GLFWwindow* window = Initialize();
+	GLFWwindow* window = Initialize();
 
-  // Tells the GPU how our vertex data is formatted
-  unsigned int VAO; // Vertex Array Object
-  glGenVertexArrays(1, &VAO);
-  glBindVertexArray(VAO);
-  // Shoves all vertex data into one buffer to send to the GPU
-  unsigned int VBO; // Vertex Buffer Object
-  glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO); // Specify that we are using this object for vertexes
-  /* For glBufferData, there are 3 ways to handle the data:
-      GL_STREAM_DRAW: vertex data never changes, and is rarely used (rarely used)
-      GL_STATIC_DRAW: vertex data never changes, but is used many times (basically, levels)
-      GL_DYNAMIC_DRAW: vertex data changes frequently, and is used frequently (basically, entities)
-  */
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // Fill the VBO
+	VAO defaultVAO(GL_FLOAT, {3, 3, 2});
+	VBO cubeVBO(vertices, sizeof(vertices), GL_DYNAMIC_DRAW);
+	EBO cubeEBO(indices, sizeof(indices), GL_DYNAMIC_DRAW);
+	Shader defaultShader("default.vert.glsl", "default.frag.glsl");
+	defaultShader.Use();
 
-  /* Explaination of each parameter in order:
-      1. Which vertex attribute we want to set. For this project, pos=0,color=1,tex=2,normal=3
-          The vertex shader's 'layout (location = 0)' means it is using the position attribute
-      2. Size of vert.attr. (for pos, 3 bc a vec3 has 3 values)
-      3. What type is contained in a vertex (GLSL's vec3 is floats)
-      4. Should it be normalized (basically ignore this)
-      5. Stride between vertices (the total storage required for one vertex attribute)
-      6. Offset of this attribute from the first.
-          EX: for color, offset = (void*)(3 * sizeof(float)) bc it is after the position attribute
-  */
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(0 * sizeof(float))); // position attribute
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))); // color attribute
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float))); // texture attribute
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-  glEnableVertexAttribArray(2);
-  // Allows for indexed drawing of triangles
-  unsigned int EBO; // Element Buffer Object
-  glGenBuffers(1, &EBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	// Loading image
+	int width, height, nrChannels;
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char* data = stbi_load("girl.png", &width, &height, &nrChannels, 0);
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture); // Binding tells OpenGL subsequent calls will update this type
+	// Setting texture rendering behavior. Nearest = pixel art, (Bi)linear = more realistic but blurry
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST); // min = downscale
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // mag = upscale
+	/* Parameter overview:
+		2. mipmap level, 0 = base
+		3. what image type OpenGL should store it as
+		6. legacy stuff, ignore
+		7. source image type
+		8. image data type, ignore
+	*/
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data);
 
-  // Create the shaders!
-  Shader defaultShader("default.vert", "default.frag");
+	/* OpenGL uses a right-handed system. What is that? Do the physics hand thing but point your pointer up.
+			each finger is pointing in the positive direction. Thumb = x, Pointer = y, Middle = z */
+	glm::mat4 modelMatrix = glm::mat4(1.0f);
+	glm::mat4 viewMatrix = glm::mat4(1.0f);
+	glm::mat4 projectionMatrix = glm::mat4(1.0f);
+	glm::mat4 MVP = glm::mat4(1.0f);
+	viewMatrix = glm::translate(viewMatrix, glm::vec3(0.0f, 0.0f, -3.0f)); // move view back 3u
+	projectionMatrix = glm::perspective(glm::radians(camera_fov), (float)width / (float)height, 0.1f, 100.0f);
 
-  // The main event loop of the application
-  while (!glfwWindowShouldClose(window))
-  {
-    // Whether or whether not to use wireframe mode
-    (useWireframe) ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    // Rendering stuff
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+	// The main event loop of the application
+	while (!glfwWindowShouldClose(window))
+	{
+		float time = glfwGetTime();
+		// Whether or whether not to use wireframe mode
+		(useWireframe) ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		// Rendering stuff
+		glEnable(GL_DEPTH_TEST);
+		glClearColor(0.2f, 0.2f, 0.4f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    defaultShader.Activate();
+		glBindTexture(GL_TEXTURE_2D, texture);
 
-    float timeValue = glfwGetTime();
-    float r = (sin(timeValue + 4) + 1.0f) / 2.0f;
-    float g = (sin(timeValue + 2) + 1.0f) / 2.0f;
-    float b = (sin(timeValue + 0) + 1.0f) / 2.0f;
-    int vertexColorLocation = glGetUniformLocation(defaultShader.shaderProgramID, "ourColor");
-    glUseProgram(defaultShader.shaderProgramID);
-    glUniform3f(vertexColorLocation, r, g, b);
+		float r = (sin(glfwGetTime() + 4) + 1.0f) / 2.0f;
+		float g = (sin(glfwGetTime() + 2) + 1.0f) / 2.0f;
+		float b = (sin(glfwGetTime() + 0) + 1.0f) / 2.0f;
+		int vertexColorLocation = glGetUniformLocation(defaultShader.ID, "ourColor");
+		glUseProgram(defaultShader.ID);
+		glUniform3f(vertexColorLocation, r/2, g/2, b/2);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		defaultShader.Use();
 
-    /* Swaps the color buffer(a large 2D buffer that contains color values for each pixel).
-        Rendering applications have a Double Buffer. If apps were to render moment-to-moment,
-        there would be flickering because it takes time for the applcation to draw the image,
-        but making one a draw-to and one a final image, and then swaping, fixes that problem.
-    */
-    glfwSwapBuffers(window);
-    glfwPollEvents();
-  }
+		modelMatrix = glm::rotate(modelMatrix, (float)glfwGetTime() * glm::radians(0.2f), glm::vec3(0.1f, 1.0f, 0.1f));
+		MVP = projectionMatrix * viewMatrix * modelMatrix;
+		int mvpLoc = glGetUniformLocation(defaultShader.ID, "MVP"); // model view projection (I don't know why the acronym is out of order)
+		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 
-  glfwTerminate(); // So long, gay bowser!
-  return 0;
+		cubeEBO.Unlock();
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		/* Swaps the color buffer(a large 2D buffer that contains color values for each pixel).
+			Rendering applications have a Double Buffer. If apps were to render moment-to-moment,
+			there would be flickering because it takes time for the applcation to draw the image,
+			but making one a draw-to and one a final image, and then swaping, fixes that problem.
+		*/
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+
+	glfwTerminate(); // So long, gay bowser!
+	return 0;
 }
 
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
-  glViewport(0, 0, width, height);
+	glViewport(0, 0, width, height);
 }
 
 GLFWwindow* Initialize() {
-  // Initializing GLFW - used for window creation and inputs
-  glfwInit();
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // the 1st 3 in v3.3
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // the 2nd 3 in v3.3
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  GLFWwindow* window = glfwCreateWindow(window_width, window_height, "OpenGoodLuck", NULL, NULL);
-  if (window == NULL)
-  {
-    std::cout << "Failed to create GLFW window" << std::endl;
-    glfwTerminate();
-    // ERROR
-  }
-  glfwMakeContextCurrent(window);
-  // Initializing GLAD - used for OpenGL function pointers and OS-level stuff
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-  {
-    std::cout << "Failed to initialize GLAD" << std::endl;
-    // ERROR
-  }
-  glViewport(0, 0, window_width, window_height);
-  // Registers any window resize event to use the 'FramebufferSizeCallback' function
-  glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
-  // Makes all key inputs go through the 'KeyCallback' function
-  glfwSetKeyCallback(window, KeyCallback);
+	// Initializing GLFW - used for window creation and inputs
+	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // the 1st 3 in v3.3
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // the 2nd 3 in v3.3
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	GLFWwindow* window = glfwCreateWindow(window_width, window_height, "OpenGoodLuck", NULL, NULL);
+	if (window == NULL)
+	{
+	std::cout << "Failed to create GLFW window" << std::endl;
+	glfwTerminate();
+	// ERROR
+	}
+	glfwMakeContextCurrent(window);
+	// Initializing GLAD - used for OpenGL function pointers and OS-level stuff
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+	std::cout << "Failed to initialize GLAD" << std::endl;
+	// ERROR
+	}
+	glViewport(0, 0, window_width, window_height);
+	// Registers any window resize event to use the 'FramebufferSizeCallback' function
+	glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
+	// Makes all key inputs go through the 'KeyCallback' function
+	glfwSetKeyCallback(window, KeyCallback);
 
-  return window;
+	return window;
 }
 
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-  if (action == GLFW_RELEASE) return; //only handle press events
-  if (key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, true);
-  if (key == GLFW_KEY_RIGHT_SHIFT) useWireframe = !useWireframe;
+	if (action == GLFW_RELEASE) return; //only handle press events
+	if (key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, true);
+	if (key == GLFW_KEY_RIGHT_SHIFT) useWireframe = !useWireframe;
 }

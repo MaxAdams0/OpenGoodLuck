@@ -6,27 +6,31 @@
 
 #include <glad/glad.h>
 
+#include "Errornter.hpp"
+
 #ifndef SHADER_CLASS_HPP
 #define SHADER_CLASS_HPP
 
+#define Use() Activate()
+
 class Shader {
 public:
-  /* The ID # given by glCreateProgram() */
-  int shaderProgramID;
+	/* The shader program's ID number given by glCreateProgram() */
+	unsigned int ID;
 
-  /* Constructor which creates the vertex and fragment shaders, then a shader program */
-  Shader(const char* vertFile, const char* fragFile);
+	/* Constructor which creates the vertex and fragment shaders, then a shader program */
+	Shader(const char* vertFile, const char* fragFile);
 
-  /* Create a new shader */
-  unsigned int CreateShader(const char* filename, int shaderType);
-  /* Link the vertex shader and fragment shader into one */
-  void CreateShaderProgram(unsigned int vertShader, unsigned int fragShader);
-  /* Tell OpenGL to use the shaders during the GPU process */
-  void Activate();
-  /* Delete the ShaderProgram and its child shaders */
-  void Delete();
-  /* General util function for converting a file to an array of chars */
-  std::string FileToString(const char* filename);
+	/* Create a new shader */
+	unsigned int CreateShader(const char* filename, int shaderType);
+	/* Link the vertex shader and fragment shader into one */
+	void CreateShaderProgram(unsigned int vertShader, unsigned int fragShader);
+	/* Tell OpenGL to use the shaders during the GPU process */
+	void Activate();
+	/* Delete the ShaderProgram and its child shaders */
+	void Delete();
+	/* General util function for converting a file to an array of chars */
+	std::string FileToString(const char* filename);
 };
 
 #endif
