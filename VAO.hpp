@@ -1,8 +1,10 @@
-#include <vector>
-#include <glad/glad.h>
+#pragma once
 
 #ifndef VAO_CLASS_HPP
 #define VAO_CLASS_HPP
+
+#include <vector>
+#include <glad/glad.h>
 
 // Vertex Array Object. Tells the GPU how our vertex data is formatted, per object, per multiple objects or globally.
 class VAO { 

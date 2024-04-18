@@ -1,15 +1,15 @@
+#pragma once
+
+#ifndef SHADER_CLASS_HPP
+#define SHADER_CLASS_HPP
+
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <cerrno>
-
 #include <glad/glad.h>
-
 #include "Errornter.hpp"
-
-#ifndef SHADER_CLASS_HPP
-#define SHADER_CLASS_HPP
 
 #define Use() Activate()
 
