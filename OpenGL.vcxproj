@@ -28,7 +28,6 @@
     <ClCompile Include="Errornter.cpp" />
     <ClCompile Include="Errornter.hpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="ObjLoader.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VAO.cpp" />
@@ -41,7 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EBO.hpp" />
-    <ClInclude Include="ObjLoader.hpp" />
     <ClInclude Include="Shader.hpp" />
     <ClInclude Include="Texture.hpp" />
     <ClInclude Include="VBO.hpp" />

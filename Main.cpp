@@ -15,7 +15,7 @@
 #include "VBO.hpp"
 #include "EBO.hpp"
 #include "Texture.hpp"
-#include "ObjLoader.hpp"
+//#include "ObjLoader.hpp"
 
 int window_width = 800;
 int window_height = 800;
@@ -95,7 +95,7 @@ int main()
 	Shader defaultShader("default.vert.glsl", "default.frag.glsl");
 	defaultShader.Use();
 	Texture girlTex("girl.png", true);
-	ObjLoader::Mesh butterfly = ObjLoader::NewMesh("res\\bluemorpho\\BlueMorpho.obj");
+	//ObjLoader::Mesh butterfly = ObjLoader::NewMesh("res\\bluemorpho\\BlueMorpho.obj");
 
 	/* OpenGL uses a right-handed system. What is that? Do the physics hand thing but point your pointer up.
 			each finger is pointing in the positive direction. Thumb = x, Pointer = y, Middle = z */
