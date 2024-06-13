@@ -6,11 +6,11 @@ The eventual "get it out the door" stage is to simply have enough features to ha
 
 TLDR,
 ### Rendering
-- Textures
+- ~~Textures~~
 - Vertex & texture-baked lighting
 - Rudimentary collisions
 ### Game
-- Objects (static)
+- ~~Objects (static)~~ (sorta)
 - Objects (dynamic)
 - Entities (pcc & npc)
 ### Other
