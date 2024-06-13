@@ -31,6 +31,10 @@ public:
 	void Delete();
 	/* General util function for converting a file to an array of chars */
 	std::string FileToString(const char* filename);
+
+	void SetBool(const std::string& name, bool value) const;
+	void SetInt(const std::string& name, int value) const;
+	void SetFloat(const std::string& name, float value) const;
 };
 
 #endif
